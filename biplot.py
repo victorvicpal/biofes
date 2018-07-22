@@ -277,3 +277,73 @@ class Canonical(object):
                     Var_Coord[i,dim[1]] , self.col_names[i], fontsize=font_size)
 
         plt.show()
+
+class CA(object):
+    ''' Benzecri Correspondence Analysis'''
+    def __init__(self, data, dim, alpha=1, method=None, niter=5, state=0):
+        if isinstance(data , pandas.core.frame.DataFrame):
+            self.col_names = list(data.columns)
+            self.data = data.as_matrix()
+        elif isinstance(data , numpy.ndarray):
+            self.col_names = ['Var_'+str(i+1) for i in range(data.shape[1])]
+            self.data = data
+        else:
+            raise ValueError('not pandas DataFrame nor numpy ndarray')
+
+        if isinstance(dim, (int, float)):
+            self.dim = dim
+        else:
+            raise ValueError('not numeric')
+        if self.dim>self.data.shape[1]:
+            raise ValueError('dim bigger than p')
+        
+        if (alpha>=0 and alpha<=1):
+            self.alpha = alpha
+        else:
+            raise ValueError('not between 0 and 1')
+        
+        data = data / data.sum()
+        
+        dr = numpy.matrix(data.sum(axis=1))
+        dc = numpy.matrix(data.sum(axis=0))
+        
+        data = data - dr.T.dot(dc)
+        
+        Dr = numpy.diagflat(1/numpy.sqrt(dr))
+        Dc = numpy.diagflat(1/numpy.sqrt(dc))
+        data = Dr.dot(data).dot(Dc)
+        
+        U, Sigma, VT = SVD(data,data.shape[1],niter,state)
+        
+        d = Sigma[:numpy.min(data.shape)]
+        r = numpy.min(data.shape)
+        
+        self.inertia = numpy.power(d,2)*100 / numpy.sum(numpy.power(d,2))
+        
+        U = Dr.dot(U[:,:r])
+        V = Dc.dot(VT.T[:,:r])
+        
+        D = numpy.diagflat(d)
+        A = U.dot(D)
+        B = V.dot(D)
+        
+        sf = numpy.power(A,2).sum(axis = 1)
+        cf = numpy.linalg.inv(numpy.diagflat(sf)).dot(numpy.power(A,2))
+        
+        sc = numpy.power(B,2).sum(axis = 1)
+        cc = numpy.linalg.inv(numpy.diagflat(sc)).dot(numpy.power(B,2))
+        
+        A = U.dot(numpy.diagflat(numpy.power(d,alpha)))
+        B = V.dot(numpy.diagflat(numpy.power(d,1-alpha)))
+        
+        self.AB = A[:, :dim].dot(B[:, :dim].T)
+        
+        self.eigen_values = numpy.power(d,2)
+        
+        self.RowCoordinates = A[:, :dim]
+        self.ColCoordinates = B[:, :dim]
+        
+        self.RowContributions = cf[:, :dim] * 100
+        self.ColContributions = cc[:, :dim] * 100
+        
+        
