@@ -1,2 +1,1 @@
-# biofes
-**Bio**medical **Fe**ature **S**election for Machine Learning Models
+![biofes](https://github.com/victorvicpal/biofes/blob/master/logo.png)
