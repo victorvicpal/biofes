@@ -1,1 +1,1 @@
-![biofes](https://github.com/victorvicpal/biofes/doc/blob/master/logo.png)
+![biofes](https://github.com/victorvicpal/biofes/blob/master/doc/logo.png)
