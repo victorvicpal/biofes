@@ -79,7 +79,7 @@ class Classic(object):
     def __init__(self, data, dim, alpha = 1, method=None,niter=5,state=None):
         if isinstance(data , pandas.core.frame.DataFrame):
             self.col_names = list(data.columns)
-            self.data = data.as_matrix()
+            self.data = data.values
         elif isinstance(data , numpy.ndarray):
             self.col_names = ['Var_'+str(i+1) for i in range(data.shape[1])]
             self.data = data
@@ -138,7 +138,7 @@ class Canonical(object):
     def __init__(self, data,dim,GroupNames,y, method=None,niter=5,state=0):
         if isinstance(data , pandas.core.frame.DataFrame):
             self.col_names = list(data.columns)
-            self.data = data.as_matrix()
+            self.data = data.values
         elif isinstance(data , numpy.ndarray):
             self.col_names = ['Var_'+str(i+1) for i in range(data.shape[1])]
             self.data = data
@@ -174,7 +174,7 @@ class Canonical(object):
         #Groups to Binary
         Z = Factor2Binary(self.target)
         ng = Z.sum(axis=0)
-        S11 = (Z.T).dot(Z).as_matrix()
+        S11 = (Z.T).dot(Z).values
         #print('S11 : {} / Z.T : {} / data_std : {}'.format(S11.shape, Z.T.shape, data_std.shape))
         Xb = numpy.linalg.inv(S11).dot(Z.T).dot(data_std)
         B = (Xb.T).dot(S11).dot(Xb)
@@ -283,7 +283,7 @@ class CA(object):
     def __init__(self, data, dim, alpha=1, method=None, niter=5, state=0):
         if isinstance(data , pandas.core.frame.DataFrame):
             self.col_names = list(data.columns)
-            self.data = data.as_matrix()
+            self.data = data.values
         elif isinstance(data , numpy.ndarray):
             self.col_names = ['Var_'+str(i+1) for i in range(data.shape[1])]
             self.data = data
