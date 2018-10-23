@@ -132,7 +132,7 @@ class Classic(object):
         
 class Canonical(object):
     '''
-    Canonical biplot (Vicente-Villardon)
+    Canonical selflot (Vicente-Villardon)
     '''
 
     def __init__(self, data,dim,GroupNames,y, method=None,niter=5,state=0):
@@ -338,7 +338,7 @@ class CA(object):
         
         self.AB = A[:, :dim].dot(B[:, :dim].T)
         
-        self.eigen_as_matrix = numpy.power(d,2)
+        self.eigen_values = numpy.power(d,2)
         
         self.RowCoordinates = A[:, :dim]
         self.ColCoordinates = B[:, :dim]
