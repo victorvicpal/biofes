@@ -22,29 +22,29 @@ def SVD(M,dimen,niter=5,state=0):
     U, Sigma, VT = randomized_svd(M, n_components=dimen,n_iter=niter,random_state=state)
     return U, Sigma, VT
 
-def Inertia(M,dimen,niter=5,state=None):
-    U, Sigma, VT = SVD(M,dimen,niter,state)
-    EV = numpy.power(Sigma,2)
-    Inert = EV/numpy.sum(EV) * 100
-    return EV, Inert
+#def Inertia(M,dimen,niter=5,state=None):
+#    U, Sigma, VT = SVD(M,dimen,niter,state)
+#    EV = numpy.power(Sigma,2)
+#    Inert = EV/numpy.sum(EV) * 100
+#    return EV, Inert
 
-def Contributions(M,dimen,n,p,niter=5,state=None):
-    U, Sigma, VT = SVD(M,dimen,niter,state)
+#def Contributions(M,dimen,n,p,niter=5,state=None):
+#    U, Sigma, VT = SVD(M,dimen,niter,state)
 
-    R = U.dot(numpy.diag(Sigma[:dimen]))
-    C = numpy.transpose(VT).dot(numpy.diag(Sigma[:dimen]))
+#    R = U.dot(numpy.diag(Sigma[:dimen]))
+#    C = numpy.transpose(VT).dot(numpy.diag(Sigma[:dimen]))
 
-    sf = numpy.sum(numpy.power(M,2),axis=1)
-    cf = numpy.zeros((n,dimen))
-    for k in range(0,dimen):
-        cf[:,k] = numpy.power(R[:,k],2)*100/sf
+#    sf = numpy.sum(numpy.power(M,2),axis=1)
+#    cf = numpy.zeros((n,dimen))
+#    for k in range(0,dimen):
+#        cf[:,k] = numpy.power(R[:,k],2)*100/sf
 
-    sc = numpy.sum(numpy.power(M,2),axis=0)
-    cc = numpy.zeros((p,dimen))
-    for k in range(0,dimen):
-        cc[:,k] = numpy.power(C[:,k],2)*100/sc
+#   sc = numpy.sum(numpy.power(M,2),axis=0)
+#   cc = numpy.zeros((p,dimen))
+#   for k in range(0,dimen):
+#       cc[:,k] = numpy.power(C[:,k],2)*100/sc
 
-    return cf, cc
+#   return cf, cc
 
 def Factor2Binary(y,Name = None):
     if Name == None:
@@ -100,13 +100,31 @@ class Classic(object):
             raise ValueError('not between 0 and 1')
             
         self.data_st = standardize(self.data,meth=method)
+        n, p = self.data_st.shape
+        
+        #SVD
         U, Sigma, VT = SVD(self.data_st,self.dim,niter,state)
-
-        self.EV, self.Inert = Inertia(self.data_st,self.dim,niter,state)
-        self.RowCont, self.ColCont = Contributions(self.data_st,self.dim,self.data.shape[0],self.data.shape[1],niter,state)
-
+        
+        # EV / INERTIA
+        self.EV = numpy.power(Sigma,2)
+        self.Inert = self.EV/numpy.sum(self.EV) * 100
+        
+        # CONTRIBUTIONS
+        
         R = U.dot(numpy.diag(Sigma[:self.dim]))
         C = numpy.transpose(VT).dot(numpy.diag(Sigma[:self.dim]))
+        
+        sf = numpy.sum(numpy.power(self.data_st,2),axis=1)
+        cf = numpy.zeros((n,self.dim))
+        for k in range(0,self.dim):
+            cf[:,k] = numpy.power(R[:,k],2)*100/sf
+        
+        sc = numpy.sum(numpy.power(self.data_st, 2),axis=0)
+        cc = numpy.zeros((p,self.dim))
+        for k in range(0,self.dim):
+            cc[:,k] = numpy.power(C[:,k],2)*100/sc
+        
+        self.RowCont, self.ColCont = cf, cc
 
         R = R.dot(numpy.diag(numpy.power(Sigma,self.alpha)))
         C = C.dot(numpy.diag(numpy.power(Sigma,1-self.alpha)))
