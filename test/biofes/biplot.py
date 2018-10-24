@@ -39,12 +39,12 @@ def SVD(M,dimen,niter=5,state=0):
 #    for k in range(0,dimen):
 #        cf[:,k] = numpy.power(R[:,k],2)*100/sf
 
-#   sc = numpy.sum(numpy.power(M,2),axis=0)
-#   cc = numpy.zeros((p,dimen))
-#   for k in range(0,dimen):
-#       cc[:,k] = numpy.power(C[:,k],2)*100/sc
+#    sc = numpy.sum(numpy.power(M,2),axis=0)
+#    cc = numpy.zeros((p,dimen))
+#    for k in range(0,dimen):
+#        cc[:,k] = numpy.power(C[:,k],2)*100/sc
 
-#   return cf, cc
+#    return cf, cc
 
 def Factor2Binary(y,Name = None):
     if Name == None:
