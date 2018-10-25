@@ -111,8 +111,9 @@ class test_biplot(unittest.TestCase):
             if str((cf - BCla.RowCont).mean()) == 'nan':
                 pass
             else:
-                els = A.shape[0]*A.shape[1]
+                els = cf.shape[0]*cf.shape[1]
                 self.assertAlmostEqual(np.mean(cf - BCla.RowCont), 0, delta=els*(1e-2), msg='Row Contributions error')
+                els = cc.shape[0]*cc.shape[1]
                 self.assertAlmostEqual(np.mean(cc - BCla.ColCont), 0, delta=els*(1e-2), msg='Column Contributions error')
         except:
             pass
@@ -224,14 +225,101 @@ class test_biplot(unittest.TestCase):
             pass
         
         # WILKS TEST
-        self.assertAlmostEqual(Wilks['f-val'] - BCan.Wilks['f-val'], 0, delta=(1e-3), msg='f-val Wilks error')
-        self.assertAlmostEqual(Wilks['p-val'] - BCan.Wilks['p-val'], 0, delta=(1e-3), msg='p-val Wilks error')
+        self.assertAlmostEqual(Wilks['f-val'] - BCan.Wilks['f-val'], 0, delta=(1e-2), msg='f-val Wilks error')
+        self.assertAlmostEqual(Wilks['p-val'] - BCan.Wilks['p-val'], 0, delta=(1e-2), msg='p-val Wilks error')
         
         # RADIUS
         self.assertAlmostEqual(np.mean(Radius['Uni'] - BCan.Radius['Uni']), 0, delta=(1e-3), msg='Uni Radius error')
         self.assertAlmostEqual(np.mean(Radius['Bonf'] - BCan.Radius['Bonf']), 0, delta=(1e-3), msg='Bonferroni Radius error')
         self.assertAlmostEqual(np.mean(Radius['Mult'] - BCan.Radius['Mult']), 0, delta=(1e-3), msg='Mult Radius error')
         self.assertAlmostEqual(np.mean(Radius['Chis'] - BCan.Radius['Chis']), 0, delta=(1e-3), msg='Chi-sqr Radius error')
+        
+    def test_CA(self):
+        n, p = np.random.randint(100, 500), np.random.randint(50, 90)
+        A = np.random.randint(np.random.randint(1,10), np.random.randint(30,200), (n,p))
+        dim = np.random.randint(p)
+        a = np.random.random(1)[0]
+        
+        BCA = biplot.CA(data=A, dim=dim, alpha=a ,niter=15, state=0)
+        
+        A = A / A.sum()
+        
+        dr = np.matrix(A.sum(axis=1))
+        dc = np.matrix(A.sum(axis=0))
+        
+        A = A - dr.T.dot(dc)
+        
+        Dr = np.diagflat(1/np.sqrt(dr))
+        Dc = np.diagflat(1/np.sqrt(dc))
+        A = Dr.dot(A).dot(Dc)
+        
+        U, Sigma, VT = SVD(A, dim, niter = 15, state = 0)
+        
+        d = Sigma[:np.min(A.shape)]
+        r = np.min(A.shape)
+        
+        inertia = numpy.power(d,2)*100 / numpy.sum(numpy.power(d,2))
+        
+        U = Dr.dot(U[:,:r])
+        V = Dc.dot(VT.T[:,:r])
+        
+        D = np.diagflat(d)
+        A = U.dot(D)
+        B = V.dot(D)
+        
+        sf = np.power(A,2).sum(axis = 1)
+        cf = np.linalg.inv(np.diagflat(sf)).dot(np.power(A,2))
+        
+        sc = np.power(B,2).sum(axis = 1)
+        cc = np.linalg.inv(np.diagflat(sc)).dot(np.power(B,2))
+        
+        A = U.dot(np.diagflat(np.power(d,a)))
+        B = V.dot(np.diagflat(np.power(d,1-a)))
+        
+        # AB
+        AB = A[:, :dim].dot(B[:, :dim].T)
+        
+        # Eigenvalues
+        eigen_values = np.power(d,2)
+        
+        # Coordinates
+        RowCoordinates = A[:, :dim]
+        ColCoordinates = B[:, :dim]
+        
+        # Contributions
+        RowContributions = cf[:, :dim] * 100
+        ColContributions = cc[:, :dim] * 100
+        
+        # INERTIA TEST
+        try:
+            if str((inertia -  BCA.inertia).mean()) == 'nan':
+                pass
+            else:
+                self.assertAlmostEqual(np.mean(inertia -  BCA.inertia), 0, msg='Inertia error')
+                self.assertAlmostEqual(np.mean(eigen_values -  BCA.eigen_values), 0, msg='eigen values error')
+        except:
+            pass
+        
+        # AB TEST
+        self.assertAlmostEqual(np.mean(AB - BCA.AB), 0, delta=(1e-2), msg='AB error')
+        
+        # COORDINATES TEST
+        els = RowCoordinates.shape[0]*RowCoordinates.shape[1]
+        self.assertAlmostEqual(np.mean(RowCoordinates - BCA.RowCoordinates), 0, delta=els*(1e-2), msg='Row Coordinates error')
+        els = ColCoordinates.shape[0]*ColCoordinates.shape[1]
+        self.assertAlmostEqual(np.mean(ColCoordinates - BCA.ColCoordinates), 0, delta=els*(1e-2), msg='Col Coordinates error')
+        
+        # CONTRIBUTIONS TEST
+        try:
+            if str((cf - BCla.RowCont).mean()) == 'nan':
+                pass
+            else:
+                els = RowContributions.shape[0]*RowContributions.shape[1]
+                self.assertAlmostEqual(np.mean(RowContributions - BCA.RowContributions), 0, delta=els*(1e-2), msg='Row Contributions error')
+                els = ColContributions.shape[0]*ColContributions.shape[1]
+                self.assertAlmostEqual(np.mean(ColContributions - BCA.ColContributions), 0, delta=els*(1e-2), msg='Column Contributions error')
+        except:
+            pass
 
 if __name__ == '__main__':
     unittest.main()
