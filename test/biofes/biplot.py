@@ -39,12 +39,12 @@ def SVD(M,dimen,niter=5,state=0):
 #    for k in range(0,dimen):
 #        cf[:,k] = numpy.power(R[:,k],2)*100/sf
 
-#    sc = numpy.sum(numpy.power(M,2),axis=0)
-#    cc = numpy.zeros((p,dimen))
-#    for k in range(0,dimen):
-#        cc[:,k] = numpy.power(C[:,k],2)*100/sc
+#   sc = numpy.sum(numpy.power(M,2),axis=0)
+#   cc = numpy.zeros((p,dimen))
+#   for k in range(0,dimen):
+#       cc[:,k] = numpy.power(C[:,k],2)*100/sc
 
-#    return cf, cc
+#   return cf, cc
 
 def Factor2Binary(y,Name = None):
     if Name == None:
@@ -298,7 +298,7 @@ class Canonical(object):
 
 class CA(object):
     ''' Benzecri Correspondence Analysis'''
-    def __init__(self, data, dim, alpha=1, method=None, niter=5, state=0):
+    def __init__(self, data, dim, alpha=1, niter=5, state=0):
         if isinstance(data , pandas.core.frame.DataFrame):
             self.col_names = list(data.columns)
             self.data = data.values
@@ -325,13 +325,13 @@ class CA(object):
         dr = numpy.matrix(data.sum(axis=1))
         dc = numpy.matrix(data.sum(axis=0))
         
-        data = data - dr.T.dot(dc)
+        data = data - (dr.T).dot(dc)
         
         Dr = numpy.diagflat(1/numpy.sqrt(dr))
         Dc = numpy.diagflat(1/numpy.sqrt(dc))
         data = Dr.dot(data).dot(Dc)
         
-        U, Sigma, VT = SVD(data,data.shape[1],niter,state)
+        U, Sigma, VT = SVD(data, dim, niter, state)
         
         d = Sigma[:numpy.min(data.shape)]
         r = numpy.min(data.shape)

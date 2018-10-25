@@ -298,7 +298,7 @@ class Canonical(object):
 
 class CA(object):
     ''' Benzecri Correspondence Analysis'''
-    def __init__(self, data, dim, alpha=1, method=None, niter=5, state=0):
+    def __init__(self, data, dim, alpha=1, niter=5, state=0):
         if isinstance(data , pandas.core.frame.DataFrame):
             self.col_names = list(data.columns)
             self.data = data.values
@@ -326,12 +326,13 @@ class CA(object):
         dc = numpy.matrix(data.sum(axis=0))
         
         data = data - dr.T.dot(dc)
+        self.data_org = data
         
         Dr = numpy.diagflat(1/numpy.sqrt(dr))
         Dc = numpy.diagflat(1/numpy.sqrt(dc))
         data = Dr.dot(data).dot(Dc)
         
-        U, Sigma, VT = SVD(data,data.shape[1],niter,state)
+        U, Sigma, VT = SVD(data, dim, niter, state)
         
         d = Sigma[:numpy.min(data.shape)]
         r = numpy.min(data.shape)
