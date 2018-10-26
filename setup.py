@@ -20,9 +20,9 @@ setup(
     install_requires=[
         'numpy>=1.14',
         'scipy>=1.0.0',
-        'sklearn>=0.19',
-        'pandas>=0.23',
-        'matplotlib>=3'
+        'sklearn>=0.19.1',
+        'pandas>=0.23.4',
+        'matplotlib>=3.0.0'
     ],
     extras_require={
         'test': ['unittest']
