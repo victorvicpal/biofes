@@ -27,5 +27,5 @@ setup(
     extras_require={
         'test': ['unittest']
     },
-    python_requires='>=3.6'
+    python_requires='>=3.5'
 )
