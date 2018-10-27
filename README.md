@@ -5,4 +5,6 @@ biofes is a Python library for biomedical feature selection.
 
 ## INSTALLATION
 
-``pip install biofes``
+```pip install biofes```
+
+```pip install "git+https://github.com/victorvicpal/biofes"```
