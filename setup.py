@@ -8,7 +8,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='biofes',
-    version='1.0',
+    version='1.0.1',
     description='Biomedical Feature Selection library',
     license='MIT',
     author='Víctor Vicente Palacios',
