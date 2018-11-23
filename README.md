@@ -1,4 +1,4 @@
-![logo](https://github.com/victorvicpal/biofes/blob/master/docs/logo.png)
+![logo](https://github.com/victorvicpal/biofes/blob/master/docs/img/logo.png)
 
 # BIOFES
 biofes is a Python library for biomedical feature selection.
