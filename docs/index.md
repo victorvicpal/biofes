@@ -1,5 +1,7 @@
 # Welcome to biofes documentation!
 
+![biofes_logo](img/logo.png)
+
 ## [Getting started](install.md)
 Information to install, test, and contribute to the package.
 
