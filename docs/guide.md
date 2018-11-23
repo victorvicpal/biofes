@@ -57,3 +57,17 @@ bip_classic.plot()
 ```
 
 ![class_bip](img/class_bip.png)
+
+#### Feature Selection
+```
+T_classic = feature.selection(bip_classic, target, thr_dis = 50, thr_corr = 0.9)
+print(T_classic.var_sel)
+```
+
+['F3S', 'F4S', 'F7R', 'F7S', 'F8R', 'F8S', 'F12R', 'F12S', 'F13R', 'F13S', 'F15R', 'F15S', 'F16R', 'F16S', 'F18R', 'F18S', 'F20R', 'F20S', 'F21R', 'F21S', 'F22R', 'F22S']
+
+```
+T_classic.Disc.loc[T_classic.var_sel,'0-1'].sort_values().plot(kind='barh', figsize= (5,10), title = 'Importance');
+```
+
+![class_fs](img/class_fs.png)
